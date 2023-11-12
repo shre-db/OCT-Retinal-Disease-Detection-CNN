@@ -1,0 +1,1 @@
+Images in this folder are used for experimenting with different image processing techniques.
