@@ -1,5 +1,5 @@
 import streamlit as st
-st.set_page_config(layout='centered', page_title="RetinaVision AI - Privacy", page_icon='<i class="fa-solid fa-braille"></i>', initial_sidebar_state='collapsed')
+st.set_page_config(page_title="RetinaVision AI - Contact", page_icon="icons/braille-solid.svg", initial_sidebar_state='collapsed')
 
 css_title = '''
 <style>
