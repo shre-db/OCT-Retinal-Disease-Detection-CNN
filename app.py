@@ -33,7 +33,7 @@ st.markdown("""
 Welcome to RetinaVision AI
 
 Experience the power of AI in healthcare with RetinaVision AI! Our user-friendly web application empowers you to upload retinal
- images and receive instant predictions from our state-of-the-art model. Whether you're a healthcare professional or simply curious,
+ optical coherence tomography (OCT) images and receive instant predictions from our state-of-the-art model. Whether you're a healthcare professional or simply curious,
  discover the capabilities of deep learning in detecting abnormalities in retinal tissue. Join us in advancing eye health through
  cutting-edge technology. Upload an image and let the future of vision unfold.
             """)
