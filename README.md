@@ -270,6 +270,7 @@ The dataset is contributed by Daniel Kermany, Kang Zhang, Michael Goldbaum at ht
 Weighted loss function is used to handle class imbalance in the training set.
 
 ## Model Performance
+![Performance](performance/performance-resnet18.png)
 |Metric|Training Set|Test Set|
 |:-|:-|:-|
 |Accuracy|91.88%| 92.37%|
