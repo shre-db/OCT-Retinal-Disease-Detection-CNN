@@ -307,7 +307,7 @@ st.markdown("""
      function for interpretation. Since there are two output units in the final layer we get an output tensor of size [batch_size, 2]. An
      example output of raw logits is: `tensor([[-0.9759,  0.7543]], grad_fn=<AddmmBackward0>)`, wherein the numbers are uninterpretable
      until we apply softmax function. The result of applying softmax is `tensor([[0.1506, 0.8494]], grad_fn=<SoftmaxBackward0>)`. The
-     the numbers 0.1506 and 0.8494 are 'class probabilities' or in layman terms 'confidence' of the model in assigning the input
+     numbers 0.1506 and 0.8494 are 'class probabilities' or in layman terms 'confidence' of the model in assigning the input
      image to a particular class. In this example, the model assigns the input image to the second class with 84.94% confidence. Note that
      the sum of the two probabilities is 100%.
 """)
@@ -339,11 +339,15 @@ st.markdown('')
 st.markdown("""
      ### Dependencies
      
-     **Software requirements**\n 
-     - Details will be updated soon.
+     **Software requirements** 
+     - numpy==1.26.0
+     - torch==2.1.0
+     - torchvision==0.16.0
+     - pillow==10.0.1
+     - pandas==2.1.1
+     - streamlit==1.28.1
      
      **Hardware requirements**
-            
      - Recommended: GPU
 """)
 
