@@ -3,68 +3,386 @@
 ![Example OCT Image](https://upload.wikimedia.org/wikipedia/commons/9/9f/SD-OCT_Macula_Cross-Section.png)
 The healthy macula of a 24 year old male (cross-section view). This image is released to Wikimedia with patient consent. Imaged in-vivo with an Optovue iVue Spectral Domain Optical Coherence Tomographer (SD-OCT) at the office of Drs. Harry Wiessner, Steven Davis, Daniel Wiessner, and Eric Wiessner in Walla Walla, WA, USA.
 
+## Table of contents
+1. Overview
+2. Model Architecture
+3. Training Details
+4. Dataset Information
+5. Model Performance
+6. Model Input and Output
+7. Model limitations
+8. Model Versioning
+9. Dependencies
+10. References
+11. Authors and Contributors
+12. License
+13. Usage Guidelines
+14. Release Date
+15. Additional Notes
+
 ## Overview
 
 This project aims to develop a deep learning model for the detection of retinal diseases from Optical Coherence Tomography (OCT) images. Optical Coherence Tomography is a non-invasive imaging technique used for high-resolution cross-sectional imaging of the retina. Early detection of retinal diseases such as age-related macular degeneration, diabetic retinopathy, and glaucoma is crucial for timely intervention and treatment.
 
-The project utilizes state-of-the-art deep learning models and transfer learning to create an accurate and robust retinal disease detection system.
+The project utilizes state-of-the-art deep learning models and transfer learning to create an accurate and robust retinal disease detection system. The ResNet-18 model, originally trained on the ImageNet dataset, serves as a powerful starting point for medical image classification tasks. In scenarios where computational resources, time constraints, and labeled data availability are crucial factors, utilizing a pre-trained model offers several advantages over training from scratch.
 
-## Dataset
-The dataset used in this project consists of OCT images categorized into two classes for binary classification:
 
-1. **Abnormal** (combining CNV, DME, and DRUSEN): This class represents retinal diseases, including Choroidal Neovascularization (CNV), Diabetic Macular Edema (DME), and Drusen deposits (DRUSEN).
+**1. Time and Resource Savings**: Training a deep neural network from scratch on a medical image dataset can be computationally expensive and time-consuming. Leveraging a pre-trained model allows us to benefit from the knowledge acquired during the training on a diverse and extensive dataset like ImageNet, reducing the overall training time and computational resources required.
+Feature Extraction Capability:
 
-2. **Normal**: This class represents healthy retinal images.
-The dataset is organized into training and test sets, with 6000 images per class in the former and 249 images in the latter. For this binary classification task, the first three classes are merged into the "Abnormal" class, while the "Normal" class remains unchanged. This classification simplifies the task to distinguish between retinal diseases and healthy retinal images.
+**2. Hierarchical Features**: ResNet-18, with its deep architecture, is capable of learning hierarchical features. Lower layers capture low-level features like edges and textures, while higher layers capture more abstract and complex features. This hierarchical feature extraction is advantageous for recognizing patterns in medical images that may have both fine-grained and global characteristics.
+Generalization Power:
+
+**3. Capturing Generic Features**: The features learned by ResNet-18 on ImageNet are often generic and transferable to various domains. In medical image classification, where labeled datasets might be limited, the pre-trained model's ability to generalize across different image domains becomes crucial. This aids in achieving reasonable performance even with a smaller medical dataset.
+Fine-Tuning Flexibility:
+
+**4. Adapting to Medical Domain**: The ResNet-18 model can be fine-tuned on a smaller medical dataset to specialize its knowledge for the specific task at hand. This fine-tuning process allows the model to adapt its learned features to the intricacies of medical images, improving its performance on the target domain.
+Overcoming Data Limitations:
+
+**5. Data Efficiency**: Medical datasets are often smaller than general image datasets like ImageNet. Transfer learning mitigates the challenges associated with limited labeled medical data by initializing the model with weights that already capture valuable image features. This facilitates better model performance, especially when labeled medical data is scarce.
 
 ## Model Architecture
-In this project, we explore various pre-trained deep learning architectures, including RESNET-18, RESNET-50, VGG-16, and others, to perform the binary classification of retinal images into "Abnormal" and "Normal" classes. The models are fine-tuned on the binary classification task.
+**Original RESNET-18 Architecture**
+```
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param # 
+================================================================
+            Conv2d-1         [-1, 64, 112, 112]           9,408
+       BatchNorm2d-2         [-1, 64, 112, 112]             128
+              ReLU-3         [-1, 64, 112, 112]               0
+         MaxPool2d-4           [-1, 64, 56, 56]               0
+            Conv2d-5           [-1, 64, 56, 56]          36,864
+       BatchNorm2d-6           [-1, 64, 56, 56]             128
+              ReLU-7           [-1, 64, 56, 56]               0
+            Conv2d-8           [-1, 64, 56, 56]          36,864
+       BatchNorm2d-9           [-1, 64, 56, 56]             128
+             ReLU-10           [-1, 64, 56, 56]               0
+       BasicBlock-11           [-1, 64, 56, 56]               0
+           Conv2d-12           [-1, 64, 56, 56]          36,864
+      BatchNorm2d-13           [-1, 64, 56, 56]             128
+             ReLU-14           [-1, 64, 56, 56]               0
+           Conv2d-15           [-1, 64, 56, 56]          36,864
+      BatchNorm2d-16           [-1, 64, 56, 56]             128
+             ReLU-17           [-1, 64, 56, 56]               0
+       BasicBlock-18           [-1, 64, 56, 56]               0
+           Conv2d-19          [-1, 128, 28, 28]          73,728
+      BatchNorm2d-20          [-1, 128, 28, 28]             256
+             ReLU-21          [-1, 128, 28, 28]               0
+           Conv2d-22          [-1, 128, 28, 28]         147,456
+      BatchNorm2d-23          [-1, 128, 28, 28]             256
+           Conv2d-24          [-1, 128, 28, 28]           8,192
+      BatchNorm2d-25          [-1, 128, 28, 28]             256
+             ReLU-26          [-1, 128, 28, 28]               0
+       BasicBlock-27          [-1, 128, 28, 28]               0
+           Conv2d-28          [-1, 128, 28, 28]         147,456
+      BatchNorm2d-29          [-1, 128, 28, 28]             256
+             ReLU-30          [-1, 128, 28, 28]               0
+           Conv2d-31          [-1, 128, 28, 28]         147,456
+      BatchNorm2d-32          [-1, 128, 28, 28]             256
+             ReLU-33          [-1, 128, 28, 28]               0
+       BasicBlock-34          [-1, 128, 28, 28]               0
+           Conv2d-35          [-1, 256, 14, 14]         294,912
+      BatchNorm2d-36          [-1, 256, 14, 14]             512
+             ReLU-37          [-1, 256, 14, 14]               0
+           Conv2d-38          [-1, 256, 14, 14]         589,824
+      BatchNorm2d-39          [-1, 256, 14, 14]             512
+           Conv2d-40          [-1, 256, 14, 14]          32,768
+      BatchNorm2d-41          [-1, 256, 14, 14]             512
+             ReLU-42          [-1, 256, 14, 14]               0
+       BasicBlock-43          [-1, 256, 14, 14]               0
+           Conv2d-44          [-1, 256, 14, 14]         589,824
+      BatchNorm2d-45          [-1, 256, 14, 14]             512
+             ReLU-46          [-1, 256, 14, 14]               0
+           Conv2d-47          [-1, 256, 14, 14]         589,824
+      BatchNorm2d-48          [-1, 256, 14, 14]             512
+             ReLU-49          [-1, 256, 14, 14]               0
+       BasicBlock-50          [-1, 256, 14, 14]               0
+           Conv2d-51            [-1, 512, 7, 7]       1,179,648
+      BatchNorm2d-52            [-1, 512, 7, 7]           1,024
+             ReLU-53            [-1, 512, 7, 7]               0
+           Conv2d-54            [-1, 512, 7, 7]       2,359,296
+      BatchNorm2d-55            [-1, 512, 7, 7]           1,024
+           Conv2d-56            [-1, 512, 7, 7]         131,072
+      BatchNorm2d-57            [-1, 512, 7, 7]           1,024
+             ReLU-58            [-1, 512, 7, 7]               0
+       BasicBlock-59            [-1, 512, 7, 7]               0
+           Conv2d-60            [-1, 512, 7, 7]       2,359,296
+      BatchNorm2d-61            [-1, 512, 7, 7]           1,024
+             ReLU-62            [-1, 512, 7, 7]               0
+           Conv2d-63            [-1, 512, 7, 7]       2,359,296
+      BatchNorm2d-64            [-1, 512, 7, 7]           1,024
+             ReLU-65            [-1, 512, 7, 7]               0
+       BasicBlock-66            [-1, 512, 7, 7]               0
+AdaptiveAvgPool2d-67            [-1, 512, 1, 1]               0
+           Linear-68                 [-1, 1000]         513,000
+================================================================
+Total params: 11,689,512
+Trainable params: 11,689,512
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 62.79
+Params size (MB): 44.59
+Estimated Total Size (MB): 107.96
+----------------------------------------------------------------
+```
+**Modified RESNET-18 Architecture**
+```
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1         [-1, 64, 112, 112]           9,408
+       BatchNorm2d-2         [-1, 64, 112, 112]             128
+              ReLU-3         [-1, 64, 112, 112]               0
+         MaxPool2d-4           [-1, 64, 56, 56]               0
+            Conv2d-5           [-1, 64, 56, 56]          36,864
+       BatchNorm2d-6           [-1, 64, 56, 56]             128
+              ReLU-7           [-1, 64, 56, 56]               0
+            Conv2d-8           [-1, 64, 56, 56]          36,864
+       BatchNorm2d-9           [-1, 64, 56, 56]             128
+             ReLU-10           [-1, 64, 56, 56]               0
+       BasicBlock-11           [-1, 64, 56, 56]               0
+           Conv2d-12           [-1, 64, 56, 56]          36,864
+      BatchNorm2d-13           [-1, 64, 56, 56]             128
+             ReLU-14           [-1, 64, 56, 56]               0
+           Conv2d-15           [-1, 64, 56, 56]          36,864
+      BatchNorm2d-16           [-1, 64, 56, 56]             128
+             ReLU-17           [-1, 64, 56, 56]               0
+       BasicBlock-18           [-1, 64, 56, 56]               0
+           Conv2d-19          [-1, 128, 28, 28]          73,728
+      BatchNorm2d-20          [-1, 128, 28, 28]             256
+             ReLU-21          [-1, 128, 28, 28]               0
+           Conv2d-22          [-1, 128, 28, 28]         147,456
+      BatchNorm2d-23          [-1, 128, 28, 28]             256
+           Conv2d-24          [-1, 128, 28, 28]           8,192
+      BatchNorm2d-25          [-1, 128, 28, 28]             256
+             ReLU-26          [-1, 128, 28, 28]               0
+       BasicBlock-27          [-1, 128, 28, 28]               0
+           Conv2d-28          [-1, 128, 28, 28]         147,456
+      BatchNorm2d-29          [-1, 128, 28, 28]             256
+             ReLU-30          [-1, 128, 28, 28]               0
+           Conv2d-31          [-1, 128, 28, 28]         147,456
+      BatchNorm2d-32          [-1, 128, 28, 28]             256
+             ReLU-33          [-1, 128, 28, 28]               0
+       BasicBlock-34          [-1, 128, 28, 28]               0
+           Conv2d-35          [-1, 256, 14, 14]         294,912
+      BatchNorm2d-36          [-1, 256, 14, 14]             512
+             ReLU-37          [-1, 256, 14, 14]               0
+           Conv2d-38          [-1, 256, 14, 14]         589,824
+      BatchNorm2d-39          [-1, 256, 14, 14]             512
+           Conv2d-40          [-1, 256, 14, 14]          32,768
+      BatchNorm2d-41          [-1, 256, 14, 14]             512
+             ReLU-42          [-1, 256, 14, 14]               0
+       BasicBlock-43          [-1, 256, 14, 14]               0
+           Conv2d-44          [-1, 256, 14, 14]         589,824
+      BatchNorm2d-45          [-1, 256, 14, 14]             512
+             ReLU-46          [-1, 256, 14, 14]               0
+           Conv2d-47          [-1, 256, 14, 14]         589,824
+      BatchNorm2d-48          [-1, 256, 14, 14]             512
+             ReLU-49          [-1, 256, 14, 14]               0
+       BasicBlock-50          [-1, 256, 14, 14]               0
+           Conv2d-51            [-1, 512, 7, 7]       1,179,648
+      BatchNorm2d-52            [-1, 512, 7, 7]           1,024
+             ReLU-53            [-1, 512, 7, 7]               0
+           Conv2d-54            [-1, 512, 7, 7]       2,359,296
+      BatchNorm2d-55            [-1, 512, 7, 7]           1,024
+           Conv2d-56            [-1, 512, 7, 7]         131,072
+      BatchNorm2d-57            [-1, 512, 7, 7]           1,024
+             ReLU-58            [-1, 512, 7, 7]               0
+       BasicBlock-59            [-1, 512, 7, 7]               0
+           Conv2d-60            [-1, 512, 7, 7]       2,359,296
+      BatchNorm2d-61            [-1, 512, 7, 7]           1,024
+             ReLU-62            [-1, 512, 7, 7]               0
+           Conv2d-63            [-1, 512, 7, 7]       2,359,296
+      BatchNorm2d-64            [-1, 512, 7, 7]           1,024
+             ReLU-65            [-1, 512, 7, 7]               0
+       BasicBlock-66            [-1, 512, 7, 7]               0
+AdaptiveAvgPool2d-67            [-1, 512, 1, 1]               0
+           Linear-68                    [-1, 2]           1,026
+================================================================
+Total params: 11,177,538
+Trainable params: 11,177,538
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 62.79
+Params size (MB): 42.64
+Estimated Total Size (MB): 106.00
+----------------------------------------------------------------
+```
+All feature extraction layers were frozen and only the classfication head was replaced and fine-tuned for binary classfication.
 
-The process involves:
+## Training Details
+**Dataset**
+   - Training Set (108309 images)
+        - ABNORMAL (57169 images)
+        - NORMAL (51140 images)
+   - Test Set (498 images)
+        - ABNORMAL (249 images)
+        - NORMAL (249 images)
+          
+**Data Preprocessing steps**
+- Grayscale to RGB conversion
+- Resize to (224, 224)
+- Center Crop (224)
+- Convert to PyTorch Tensors
+- Normalize with mean and standard deviation values of [0.485, 0.456, 0.406] and [0.229, 0.224, 0.225] respectively.
+      
+**Hyperparameters used during training**
+- Train batch size: 512
+- Test batch size: 249
+- Input image size: (3, 224, 224)
+- Learning Rate: 0.001
+- Optimizer: Adam
+- Loss function: Weighted Cross-Entropy Loss (wCE)
+- Training epochs: 10
+- Number of output units: 2
+- Layer freezing: All feature extraction layers frozen.
 
-1. **Fine-Tuning**: Pre-trained models are adapted to the specific task of retinal disease detection. This involves updating the top layers of the models while retaining their learned feature extraction capabilities.
+## Dataset Information
+            
+**Large Dataset of Labeled Optical Coherence Tomography (OCT)**:
+This dataset contains thousands of validated OCT described and analyzed in "Identifying Medical Diagnoses and Treatable
+Diseases by Image-Based Deep Learning". The images are split into a training set and a testing set of independent patients.
+Images are labeled as (disease)-(randomized patient ID)-(image number by this patient) and split into 4 directories:
+CNV, DME, DRUSEN, and NORMAL.
+The folder structure is modified for the binary classification problem, where CNV, DME and DRUSEN are treated as
+ABNORMAL and NORMAL as NORMAL.
 
-2. **Testing and Evaluation**: Each fine-tuned model is rigorously evaluated on the test dataset to assess its performance in terms of accuracy and other relevant metrics.
+      
+**Data Source and collection methods**     
+The dataset is contributed by Daniel Kermany, Kang Zhang, Michael Goldbaum at https://data.mendeley.com/datasets/rscbjbr9sj/3
 
-3. **Model Selection**: The best-performing model, based on rigorous evaluation, will be selected for deployment.
+**Data Statistics**
+|Medical Condition|Feature|Number of samples (Train, Test)|
+|:-|:-|:-|
+|Choroidal Neovascularization|CNV|(37205, 250)|
+|Diabetic Macular Edema|DME|(11348, 250)|
+|Drusen|DRUSEN|(8616, 250)|
+|Healthy|NORMAL|(51140, 250)|
 
-The final choice of the model for deployment will be based on its ability to effectively distinguish between retinal diseases and healthy retinal images. The selection process ensures that the chosen model offers the highest accuracy and robustness for real-world applications.
+**Data Statistics after folder restructing and test data resampling.**
+|Medical Condition|Feature|Number of samples (Train, Test)|
+|:-|:-|:-|
+|ABNORMAL|CNV|((51140, 249)|
+|NORMAL|DME|(57169, 249)|
 
-## Requirements
+Weighted loss function is used to handle class imbalance in the training set.
 
-- Python 3.x
-- PyTorch
-- torchvision
-- NumPy
-- Matplotlib
-- PIL (Pillow)
+## Model Performance
+|Metric|Training Set|Test Set|
+|:-|:-|:-|
+|Accuracy|91.88%| 92.37%|
+|Recall|92.98%|95.24%|
+|Precision|90.19%|90.23%|
+|F1|91.52%|92.66%|
+|ROC-AUC|97.38%|98.01%|
 
-The project is still in development stage, more information about the specifics of libraries will be updated after finalizing a model.
+- The train and test accuracy, recall, precision, F1 and ROC-AUC scores are all quite high, in the 90%+ range. This indicates that the model has learned the patterns well and is generalizing successfully to new data.
+- The test set scores are very close to the training set scores. This suggests there is minimal overfitting, which is great.
+- The high recall suggests that the model is correctly identifying most of the relevant ABNORMAL cases, at the cost of some precision. This may be desirable for a diagnostic application.
 
-## Methodology
+## Model Input and Output
 
-1. **Data Collection**: Retinal OCT images were collected from [source](https://data.mendeley.com/datasets/rscbjbr9sj/3).
+**1. Description of the input features**
+     
+Inputs are optical coherence tomography (OCT) images of retinal tissues having structure and morphology of
+retinal tissues as signal and speckle noise as noise component. RESNET-18 expects 3 channelled, (224 pixel x 224 pixel) sized images for downstream tasks like feature extraction and classification. Therefore, images in the form of PyTorch tensors with size (batchsize, 3, 224, 224) are provided as input to the model.
 
-2. **Data Preprocessing**: Due to computational resource constraints, training and test data were downsampled. Image processing techniques like 'z-score Normalization' and 'Median Filtering' were applied to prepare the dataset for training.
+**2. Description and interpretation of the model output**
 
-3. **Model Architecture**: All pre-trained feature-extraction layers were frozen and classifications heads were fine-tuned for transfer learning. Final layers of the models were adapted for the binary classification problem.
+The final layer of the model produces uninterpretable numbers called 'logits', which can be passed through a softmax activation function for interpretation. Since there are two output units in the final layer we get an output tensor of size [batch_size, 2]. An example output of raw logits is: `tensor([[-0.9759,  0.7543]], grad_fn=<AddmmBackward0>)`, wherein the numbers are uninterpretable until we apply softmax function. The result of applying softmax is `tensor([[0.1506, 0.8494]], grad_fn=<SoftmaxBackward0>)`. The numbers 0.1506 and 0.8494 are 'class probabilities' or in layman terms 'confidence' of the model in assigning the input image to a particular class. In this example, the model assigns the input image to the second class with 84.94% confidence. Note that the sum of the two probabilities is 100%.
 
-4. **Model Training**: The deep learning models are trained on the training dataset. Hyperparameters specifics will be updated soon.
+## Model Limitations
 
-5. **Evaluation**: The model's performance is evaluated on the test dataset using appropriate metrics (e.g., accuracy, precision, recall, F1 and ROC-AUC)
+**Overall model limitations**
 
-6. **Inference**: The trained model can be used for inference on new OCT images to detect retinal diseases.
+- As a deep learning model, interpretability is lower compared to some other techniques.
+- Depends on the quality and consistency of the training data labeling and image acquisition process.
+      
+**Precision-Recall limitations**
 
-## Acknowledgments
+- High recall but relatively lower precision suggests some over-prediction of abnormal cases. In other words, the model is being more inclusive, making an effort to avoid missing any positive instances (minimizing false negatives) even if it means allowing more false positives.
+- Predicted probability thresholds may need adjustment to balance precision and recall for clinical use.
 
-We would like to acknowledge the source of the OCT dataset used in this project.
+## Model Versioning
+Version 1.0.0
 
-Kermany, Daniel; Zhang, Kang; Goldbaum, Michael (2018), “Large Dataset of Labeled Optical Coherence Tomography (OCT) and Chest X-Ray Images”, Mendeley Data, V3, doi: 10.17632/rscbjbr9sj.3
+## Dependencies
+     
+**Software requirements** 
+- numpy 1.26.0
+- torch 2.1.0
+- torchvision 0.16.0
+- pillow 10.0.1
+- pandas 2.1.1
+- streamlit 1.28.1
 
-## License
+**Hardware requirements**
+- Recommended: GPU
 
-This project is licensed under the [MIT License](LICENSE).
+## References
+     
+1. Kermany, Daniel; Zhang, Kang; Goldbaum, Michael (2018), “Large Dataset of Labeled Optical Coherence Tomography (OCT) and Chest X-Ray Images”, Mendeley Data, V3, doi: 10.17632/rscbjbr9sj.3
 
-## Contact
+## Authors and Contributors
+- Shreyas Bangera
+- Affiliation: Open-Source Project
+- Contact: shreyasdb99@gmail.com
 
-For questions or inquiries, please contact us at shreyasdb99@gmail.com.
+### License
+```
+MIT License
+
+Copyright (c) 2023 Shreyas
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+ ## Usage Guidelines
+**Deployment Guidelines:**
+
+- The model should only be used on OCT images meeting the same quality standards and capture process as the training data. Lower quality images may lead to inaccurate predictions.
+- Prediction outputs should be carefully reviewed and validated by medical professionals before use in any diagnosis or treatment plan. The model cannot be solely relied upon.
+- Monitor model performance with ongoing governance including accuracy, data drift, fairness, and explainability checks. Have a retraining plan in place if performance declines over time.
+- Clinical integration testing is highly recommended prior to full deployment in practice to validate safety and efficacy.
+- To reduce risks related to demographics mismatch, consider retraining or fine-tuning the model on local datasets.
+
+**Appropriate Use Guidelines:**
+
+- This model is intended only to serve as an assistive screening tool - final diagnosis and treatment decisions must be made by qualified eye care specialists.
+- Outputs should never directly lead to any irreversible treatment or surgical procedures without separate clinical validation.
+- Results should be interpreted in the broader clinical context considering patient history, actual examination and other relevant tests.
+- Use caution when applying model predictions to significantly different patient populations or equipment settings compared to the original training data.
+- Relying solely on model predictions to rule out disease could lead to missed diagnosis - false negatives must be carefully monitored.
+- Adhere to responsible AI practices such as maintaining transparency, evaluating bias/fairness and providing explainability to build appropriate user trust.
+
+By following deployment best practices and usage guidelines focused on clinical validity, safety, and responsibility, this model has the potential to provide valuable assistance improving retinal disease screening and detection.
+
+## Release Date
+Nov 14 2023
+
+## Additional Notes
+- The model was trained using PyTorch and Python with an NVIDIA P100 GPU on a Kaggle environment. Key packages used include NumPy, Matplotlib, Pillowa and Scikit-Learn.
+- The overall model architecture consists of a ResNet18 backbone pre-trained on ImageNet, with a customized classifier head and loss function added.
+- Training was done on a large 108k image dataset. Test set was held out completely from model development.
+- Class imbalance was handled via weighted loss function.
+- The dataset consisted of OCT images sourced from [data.mendeley.com](https://data.mendeley.com/datasets/rscbjbr9sj/3)
+- Regular model monitoring, updated retraining, explainability and bias mitigation procedures should be implemented for production deployment.
+- Future work could explore multi-class classification, localization, ensemble techniques and comparative studies against other retinal image analysis techniques.
