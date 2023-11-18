@@ -37,7 +37,7 @@ Experience the power of AI in healthcare with RetinaVision AI! Our user-friendly
  optical coherence tomography (OCT) images and receive instant predictions from our state-of-the-art model. Whether you're a healthcare professional or simply curious,
  discover the capabilities of deep learning in detecting abnormalities in retinal tissue. Join us in advancing eye health through
  cutting-edge technology. Upload an image and let the future of vision unfold.
-            """)
+""")
 
 st.markdown('')
 st.markdown('')
@@ -58,12 +58,12 @@ st.markdown('')
 st.markdown('')
 
 images = st.file_uploader("**CHOOSE AN IMAGE**", type=['jpg'], accept_multiple_files=True)
+
 st.markdown('')
 st.markdown('')
 
 if images is not None:
     filenames = [image.name for image in images]
-    print(len(filenames))
 
     transforms = T.Compose([
         T.Resize(256, interpolation=InterpolationMode.BILINEAR),
@@ -76,7 +76,7 @@ if images is not None:
     for image in images:
         img = Image.open(image)
         if len(images) == 1:
-            st.image(img, use_column_width=True)
+            st.image(img, use_column_width=True, caption=image.name)
         if img.getbands() != 'RGB':
             img = img.convert('RGB')
         transformed_img = transforms(img)
@@ -87,10 +87,28 @@ if images is not None:
         inp_tensor = torch.stack(img_tensors)
 
     st.markdown('')
-    st.markdown('')
 
-    if len(images) > 0:
-        if st.button("**Predict**", help="The model evaluates the given images and returns predicted classes and respective confidence scores."):
+    if len(images) > 0:  # Otherwise predict button is available and the possibility of forward pass without input data.
+
+        def visualize_file(file_name: str):
+            if file_name is not "":
+                if file_name in filenames:
+                    for img in images:
+                        if img.name == vis_filename:
+                            vis_img = Image.open(img)
+                            return st.image(vis_img, use_column_width=True, caption=vis_filename)
+                return st.warning(f':orange["`{vis_filename}`" not found in your uploads! Please recheck the filename.]')
+
+
+        if len(images) > 1:
+            st.markdown("**Want to visualize a specific image file?**")
+            vis_filename = st.text_input(label="Specify the filename", placeholder="my_retinal_oct_image.jpeg")
+            visualize_file(str(vis_filename))
+
+        st.markdown('')
+        st.markdown('')
+
+        if st.button("**Predict**", help="The model evaluates all the given images and returns predicted classes and respective confidence scores."):
             def predict(tensor):
                 raw = densenet121(tensor)
                 y_hat = softmax(raw, dim=1)
