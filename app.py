@@ -10,6 +10,7 @@ from torch.nn.functional import softmax
 
 import torchvision
 import torchvision.transforms as T
+from torchvision.transforms.functional import InterpolationMode
 
 css_model_init = '''
 <style>
@@ -43,14 +44,14 @@ st.markdown('')
 
 st.markdown('<p class="model-init">Initializing the model...</p>', unsafe_allow_html=True)
 # Download pre-trained RESNET-18 model
-resnet18 = torchvision.models.resnet18()
+densenet121 = torchvision.models.densenet121()
 # Modify final layer
-resnet18.fc = nn.Linear(512, 2)
+densenet121.classifier = nn.Linear(1024, 2)
 
 st.markdown('<p class="model-init">Loading weights...</p>', unsafe_allow_html=True)
 # Load fine-tuned weights
-resnet18.load_state_dict(torch.load('models/resnet-18-oct-5metrics-v1.pt', map_location=torch.device('cpu')))
-resnet18.eval()
+densenet121.load_state_dict(torch.load('models/densenet121-oct-5metrics-v1.pt', map_location=torch.device('cpu')))
+densenet121.eval()
 
 st.markdown('<p class="model-init">Model is ready ✔</p>', unsafe_allow_html=True)
 st.markdown('')
@@ -65,11 +66,11 @@ if images is not None:
     print(len(filenames))
 
     transforms = T.Compose([
-            T.Resize((224, 224)), 
-            T.CenterCrop(224),
-            T.ToTensor(),
-            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
+        T.Resize(256, interpolation=InterpolationMode.BILINEAR),
+        T.CenterCrop(224),
+        T.ToTensor(),
+        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
 
     img_tensors = []
     for image in images:
@@ -91,7 +92,7 @@ if images is not None:
     if len(images) > 0:
         if st.button("**Predict**", help="The model evaluates the given images and returns predicted classes and respective confidence scores."):
             def predict(tensor):
-                raw = resnet18(tensor)
+                raw = densenet121(tensor)
                 y_hat = softmax(raw, dim=1)
                 category = torch.argmax(y_hat, dim=1).tolist()
                 return category, y_hat.tolist() 

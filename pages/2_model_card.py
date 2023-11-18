@@ -3,202 +3,30 @@ import pandas as pd
 st.set_page_config(page_title="RetinaVision AI - Model Card", page_icon="icons/braille-solid.svg", initial_sidebar_state='collapsed')
 
 st.markdown("### Model Overview")
-st.markdown('**Base model**: RESNET-18')
+st.markdown('**Base model**: DenseNet-121')
 st.markdown("**Head**: Custom head")
 st.markdown("**Brief desciption of the model's purpose and use case.**")
-st.markdown("""The ResNet-18 model, originally trained on the ImageNet dataset, serves as a powerful starting point for
+st.markdown("""The Densenet-121 model, originally trained on the ImageNet dataset, serves as a powerful starting point for
              medical image classification tasks. In scenarios where computational resources, time constraints, and labeled
              data availability are crucial factors, utilizing a pre-trained model offers several advantages over training from
              scratch.
 
 
 **1. Time and Resource Savings**: Training a deep neural network from scratch on a medical image dataset can be computationally expensive and time-consuming. Leveraging a pre-trained model allows us to benefit from the knowledge acquired during the training on a diverse and extensive dataset like ImageNet, reducing the overall training time and computational resources required.
-Feature Extraction Capability:
 
-**2. Hierarchical Features**: ResNet-18, with its deep architecture, is capable of learning hierarchical features. Lower layers capture low-level features like edges and textures, while higher layers capture more abstract and complex features. This hierarchical feature extraction is advantageous for recognizing patterns in medical images that may have both fine-grained and global characteristics.
-Generalization Power:
+**2. Feature Extraction Capability**: DenseNet-121, with its deep architecture, is capable of learning hierarchical features. Its dense connectivity pattern allows it to capture hierarchical features, ranging from low-level details to more abstract and complex patterns. Lower layers capture low-level features like edges and textures, while higher layers capture more abstract and complex features. This hierarchical feature extraction is advantageous for recognizing patterns in medical images that may have both fine-grained and global characteristics.
 
-**3. Capturing Generic Features**: The features learned by ResNet-18 on ImageNet are often generic and transferable to various domains. In medical image classification, where labeled datasets might be limited, the pre-trained model's ability to generalize across different image domains becomes crucial. This aids in achieving reasonable performance even with a smaller medical dataset.
-Fine-Tuning Flexibility:
+**3. Generalization Power**: The features learned by DenseNet-121 on ImageNet are often generic and transferable to various domains. In medical image classification, where labeled datasets might be limited, the pre-trained model's ability to generalize across different image domains becomes crucial. This aids in achieving reasonable performance even with a smaller medical dataset.
 
-**4. Adapting to Medical Domain**: The ResNet-18 model can be fine-tuned on a smaller medical dataset to specialize its knowledge for the specific task at hand. This fine-tuning process allows the model to adapt its learned features to the intricacies of medical images, improving its performance on the target domain.
-Overcoming Data Limitations:
+**4. Fine-Tuning Flexibility**: The DenseNet-121 model can be fine-tuned on a smaller medical dataset to specialize its knowledge for the specific task at hand. This fine-tuning process allows the model to adapt its learned features to the intricacies of medical images, improving its performance on the target domain.
 
-**5. Data Efficiency**: Medical datasets are often smaller than general image datasets like ImageNet. Transfer learning mitigates the challenges associated with limited labeled medical data by initializing the model with weights that already capture valuable image features. This facilitates better model performance, especially when labeled medical data is scarce.
+**5. Overcoming Data Limitations**: Medical datasets are often smaller than general image datasets like ImageNet. Transfer learning mitigates the challenges associated with limited labeled medical data by initializing the model with weights that already capture valuable image features. This facilitates better model performance, especially when labeled medical data is scarce.
             """)
 
 st.markdown('')
 st.markdown("### Model Architecture")
-st.markdown("Original RESNET-18 Architecture")
-st.markdown("""```
-----------------------------------------------------------------
-        Layer (type)               Output Shape         Param # 
-================================================================
-            Conv2d-1         [-1, 64, 112, 112]           9,408
-       BatchNorm2d-2         [-1, 64, 112, 112]             128
-              ReLU-3         [-1, 64, 112, 112]               0
-         MaxPool2d-4           [-1, 64, 56, 56]               0
-            Conv2d-5           [-1, 64, 56, 56]          36,864
-       BatchNorm2d-6           [-1, 64, 56, 56]             128
-              ReLU-7           [-1, 64, 56, 56]               0
-            Conv2d-8           [-1, 64, 56, 56]          36,864
-       BatchNorm2d-9           [-1, 64, 56, 56]             128
-             ReLU-10           [-1, 64, 56, 56]               0
-       BasicBlock-11           [-1, 64, 56, 56]               0
-           Conv2d-12           [-1, 64, 56, 56]          36,864
-      BatchNorm2d-13           [-1, 64, 56, 56]             128
-             ReLU-14           [-1, 64, 56, 56]               0
-           Conv2d-15           [-1, 64, 56, 56]          36,864
-      BatchNorm2d-16           [-1, 64, 56, 56]             128
-             ReLU-17           [-1, 64, 56, 56]               0
-       BasicBlock-18           [-1, 64, 56, 56]               0
-           Conv2d-19          [-1, 128, 28, 28]          73,728
-      BatchNorm2d-20          [-1, 128, 28, 28]             256
-             ReLU-21          [-1, 128, 28, 28]               0
-           Conv2d-22          [-1, 128, 28, 28]         147,456
-      BatchNorm2d-23          [-1, 128, 28, 28]             256
-           Conv2d-24          [-1, 128, 28, 28]           8,192
-      BatchNorm2d-25          [-1, 128, 28, 28]             256
-             ReLU-26          [-1, 128, 28, 28]               0
-       BasicBlock-27          [-1, 128, 28, 28]               0
-           Conv2d-28          [-1, 128, 28, 28]         147,456
-      BatchNorm2d-29          [-1, 128, 28, 28]             256
-             ReLU-30          [-1, 128, 28, 28]               0
-           Conv2d-31          [-1, 128, 28, 28]         147,456
-      BatchNorm2d-32          [-1, 128, 28, 28]             256
-             ReLU-33          [-1, 128, 28, 28]               0
-       BasicBlock-34          [-1, 128, 28, 28]               0
-           Conv2d-35          [-1, 256, 14, 14]         294,912
-      BatchNorm2d-36          [-1, 256, 14, 14]             512
-             ReLU-37          [-1, 256, 14, 14]               0
-           Conv2d-38          [-1, 256, 14, 14]         589,824
-      BatchNorm2d-39          [-1, 256, 14, 14]             512
-           Conv2d-40          [-1, 256, 14, 14]          32,768
-      BatchNorm2d-41          [-1, 256, 14, 14]             512
-             ReLU-42          [-1, 256, 14, 14]               0
-       BasicBlock-43          [-1, 256, 14, 14]               0
-           Conv2d-44          [-1, 256, 14, 14]         589,824
-      BatchNorm2d-45          [-1, 256, 14, 14]             512
-             ReLU-46          [-1, 256, 14, 14]               0
-           Conv2d-47          [-1, 256, 14, 14]         589,824
-      BatchNorm2d-48          [-1, 256, 14, 14]             512
-             ReLU-49          [-1, 256, 14, 14]               0
-       BasicBlock-50          [-1, 256, 14, 14]               0
-           Conv2d-51            [-1, 512, 7, 7]       1,179,648
-      BatchNorm2d-52            [-1, 512, 7, 7]           1,024
-             ReLU-53            [-1, 512, 7, 7]               0
-           Conv2d-54            [-1, 512, 7, 7]       2,359,296
-      BatchNorm2d-55            [-1, 512, 7, 7]           1,024
-           Conv2d-56            [-1, 512, 7, 7]         131,072
-      BatchNorm2d-57            [-1, 512, 7, 7]           1,024
-             ReLU-58            [-1, 512, 7, 7]               0
-       BasicBlock-59            [-1, 512, 7, 7]               0
-           Conv2d-60            [-1, 512, 7, 7]       2,359,296
-      BatchNorm2d-61            [-1, 512, 7, 7]           1,024
-             ReLU-62            [-1, 512, 7, 7]               0
-           Conv2d-63            [-1, 512, 7, 7]       2,359,296
-      BatchNorm2d-64            [-1, 512, 7, 7]           1,024
-             ReLU-65            [-1, 512, 7, 7]               0
-       BasicBlock-66            [-1, 512, 7, 7]               0
-AdaptiveAvgPool2d-67            [-1, 512, 1, 1]               0
-           Linear-68                 [-1, 1000]         513,000
-================================================================
-Total params: 11,689,512
-Trainable params: 11,689,512
-Non-trainable params: 0
-----------------------------------------------------------------
-Input size (MB): 0.57
-Forward/backward pass size (MB): 62.79
-Params size (MB): 44.59
-Estimated Total Size (MB): 107.96
-----------------------------------------------------------------
-```""")
-
-st.markdown('')
-st.markdown("Modified RESNET-18 Architecture")
-st.markdown("""```
-----------------------------------------------------------------
-        Layer (type)               Output Shape         Param #
-================================================================
-            Conv2d-1         [-1, 64, 112, 112]           9,408
-       BatchNorm2d-2         [-1, 64, 112, 112]             128
-              ReLU-3         [-1, 64, 112, 112]               0
-         MaxPool2d-4           [-1, 64, 56, 56]               0
-            Conv2d-5           [-1, 64, 56, 56]          36,864
-       BatchNorm2d-6           [-1, 64, 56, 56]             128
-              ReLU-7           [-1, 64, 56, 56]               0
-            Conv2d-8           [-1, 64, 56, 56]          36,864
-       BatchNorm2d-9           [-1, 64, 56, 56]             128
-             ReLU-10           [-1, 64, 56, 56]               0
-       BasicBlock-11           [-1, 64, 56, 56]               0
-           Conv2d-12           [-1, 64, 56, 56]          36,864
-      BatchNorm2d-13           [-1, 64, 56, 56]             128
-             ReLU-14           [-1, 64, 56, 56]               0
-           Conv2d-15           [-1, 64, 56, 56]          36,864
-      BatchNorm2d-16           [-1, 64, 56, 56]             128
-             ReLU-17           [-1, 64, 56, 56]               0
-       BasicBlock-18           [-1, 64, 56, 56]               0
-           Conv2d-19          [-1, 128, 28, 28]          73,728
-      BatchNorm2d-20          [-1, 128, 28, 28]             256
-             ReLU-21          [-1, 128, 28, 28]               0
-           Conv2d-22          [-1, 128, 28, 28]         147,456
-      BatchNorm2d-23          [-1, 128, 28, 28]             256
-           Conv2d-24          [-1, 128, 28, 28]           8,192
-      BatchNorm2d-25          [-1, 128, 28, 28]             256
-             ReLU-26          [-1, 128, 28, 28]               0
-       BasicBlock-27          [-1, 128, 28, 28]               0
-           Conv2d-28          [-1, 128, 28, 28]         147,456
-      BatchNorm2d-29          [-1, 128, 28, 28]             256
-             ReLU-30          [-1, 128, 28, 28]               0
-           Conv2d-31          [-1, 128, 28, 28]         147,456
-      BatchNorm2d-32          [-1, 128, 28, 28]             256
-             ReLU-33          [-1, 128, 28, 28]               0
-       BasicBlock-34          [-1, 128, 28, 28]               0
-           Conv2d-35          [-1, 256, 14, 14]         294,912
-      BatchNorm2d-36          [-1, 256, 14, 14]             512
-             ReLU-37          [-1, 256, 14, 14]               0
-           Conv2d-38          [-1, 256, 14, 14]         589,824
-      BatchNorm2d-39          [-1, 256, 14, 14]             512
-           Conv2d-40          [-1, 256, 14, 14]          32,768
-      BatchNorm2d-41          [-1, 256, 14, 14]             512
-             ReLU-42          [-1, 256, 14, 14]               0
-       BasicBlock-43          [-1, 256, 14, 14]               0
-           Conv2d-44          [-1, 256, 14, 14]         589,824
-      BatchNorm2d-45          [-1, 256, 14, 14]             512
-             ReLU-46          [-1, 256, 14, 14]               0
-           Conv2d-47          [-1, 256, 14, 14]         589,824
-      BatchNorm2d-48          [-1, 256, 14, 14]             512
-             ReLU-49          [-1, 256, 14, 14]               0
-       BasicBlock-50          [-1, 256, 14, 14]               0
-           Conv2d-51            [-1, 512, 7, 7]       1,179,648
-      BatchNorm2d-52            [-1, 512, 7, 7]           1,024
-             ReLU-53            [-1, 512, 7, 7]               0
-           Conv2d-54            [-1, 512, 7, 7]       2,359,296
-      BatchNorm2d-55            [-1, 512, 7, 7]           1,024
-           Conv2d-56            [-1, 512, 7, 7]         131,072
-      BatchNorm2d-57            [-1, 512, 7, 7]           1,024
-             ReLU-58            [-1, 512, 7, 7]               0
-       BasicBlock-59            [-1, 512, 7, 7]               0
-           Conv2d-60            [-1, 512, 7, 7]       2,359,296
-      BatchNorm2d-61            [-1, 512, 7, 7]           1,024
-             ReLU-62            [-1, 512, 7, 7]               0
-           Conv2d-63            [-1, 512, 7, 7]       2,359,296
-      BatchNorm2d-64            [-1, 512, 7, 7]           1,024
-             ReLU-65            [-1, 512, 7, 7]               0
-       BasicBlock-66            [-1, 512, 7, 7]               0
-AdaptiveAvgPool2d-67            [-1, 512, 1, 1]               0
-           Linear-68                    [-1, 2]           1,026
-================================================================
-Total params: 11,177,538
-Trainable params: 11,177,538
-Non-trainable params: 0
-----------------------------------------------------------------
-Input size (MB): 0.57
-Forward/backward pass size (MB): 62.79
-Params size (MB): 42.64
-Estimated Total Size (MB): 106.00
-----------------------------------------------------------------
-```""")
+st.markdown("Fine-Tuned DenseNet-121 Architecture")
+st.image("images/densnet121-architecture.png")
 st.markdown("""
      All feature extraction layers were frozen and only the classfication head was replaced and fine-tuned for binary classfication.
 """)
@@ -208,28 +36,34 @@ st.markdown("### Training Details")
 
 st.markdown("""
      **Dataset**
-     - Training Set (108309 images)
-          - ABNORMAL (57169 images)
-          - NORMAL (51140 images)
-     - Test Set (498 images)
-          - ABNORMAL (249 images)
-          - NORMAL (249 images)
+     - Training Set (98648 images)
+          - ABNORMAL (52269 images)
+          - NORMAL (46379 images)
+     - Validation Set (5194 images)
+          - ABNORMAL (2753)
+          - NORMAL (2441)
+     - Test Set (5467 images)
+          - ABNORMAL (2897 images)
+          - NORMAL (2570 images)
             
      **Data Preprocessing steps**
      - Grayscale to RGB conversion
-     - Resize to (224, 224)
+     - Resize to (256) using Bilinear interpolation
      - Center Crop (224)
      - Convert to PyTorch Tensors
      - Normalize with mean and standard deviation values of [0.485, 0.456, 0.406] and [0.229, 0.224, 0.225] respectively.
             
      **Hyperparameters used during training**
      - Train batch size: 512
-     - Test batch size: 249
+     - Validation batch size: 256
+     - Test batch size: 256
      - Input image size: (3, 224, 224)
-     - Learning Rate: 0.001
+     - Learning Rate: 0.01
+     - Weight Decay: 1e-3
+     - Class Weights: 0.9436568520537986 (ABNORMAL), 1.0634985661614094 (NORMAL)
      - Optimizer: Adam
      - Loss function: Weighted Cross-Entropy Loss (wCE)
-     - Training epochs: 10
+     - Training epochs: 5 (193 training batches)
      - Number of output units: 2
      - Layer freezing: All feature extraction layers frozen.
 """)
@@ -249,7 +83,7 @@ st.markdown("""
      
             
      **Data Source and collection methods**     
-     The dataset is contributed by Daniel Kermany, Kang Zhang, Michael Goldbaum at https://data.mendeley.com/datasets/rscbjbr9sj/3
+     The dataset is contributed by Daniel Kermany, Kang Zhang, Michael Goldbaum at [data.mendeley.com](https://data.mendeley.com/datasets/rscbjbr9sj/3)
 """)
 st.markdown('**Data Statistics**')
 data = {
@@ -260,35 +94,47 @@ data = {
 df = pd.DataFrame(data)
 st.dataframe(df, hide_index=True)
 
-st.markdown('**Data Statistics are after folder restructuring and test data downsampling.**')
+st.markdown('**Data Statistics are after folder restructuring (Train, Validation, Test)**')
 data = {
      'Medical Condition': ['Abnormal', 'Healthy'],
      'Feature': ['ABNORMAL', 'NORMAL'],
-     'Number of samples (Train, Test)': [(51140, 249), (57169, 249)],
+     'Number of samples': [(52269, 2753, 2897), (46379, 2441, 2570)],
+     'Absolute Split Percentage': [('90.25%', '4.75%', '5.00%'), ('90.25%', '4.75%', '5.00%')],
+     'Class Imbalance': [
+         (
+             round(52269/46379, 2), round(2753/2441, 2), round(2897/2570, 2),
+         ),
+         (
+             round(46379/46379, 2), round(2441/2441, 2), round(2570/2570, 2)
+         )
+     ]
 }
 df = pd.DataFrame(data)
 st.dataframe(df, hide_index=True)
-st.markdown('Weighted loss function is used to handle class imbalance in the training set.') 
+st.markdown('Weighted loss function was used to handle class imbalance in the training set.') 
 
 
 st.markdown('')
 st.markdown("""
      ### Model Performance
 """)
-st.image("performance/performance-resnet18.png")
+st.image("performance/performance-densenet121-v1.png")
 
 data = {
      'Metric': ['Accuracy', 'Recall', 'Precision', 'F1', 'ROC-AUC'],
-     'Training Set': ['91.88%', '92.98%', '90.19%', '91.52%', '97.38%'],
-     'Test Set': ['92.37%', '95.24%', '90.23%', '92.66%', '98.01%'],
+     'Training Set': ['94.63%', '95.59%', '93.25%', '94.35%', '98.77%'],
+     'Validation Set': ['95.53%', '97.01%', '93.64%', '95.28%', '98.92%'],
+     'Test Set': ['95.37%', '96.67%', '93.67%', '95.12%', '98.75%'],
 }
 df = pd.DataFrame(data)
+st.markdown('')
+st.markdown("**Performance metrics**")
 st.dataframe(df, hide_index=True)
 
 st.markdown("""
-     - The train and test accuracy, recall, precision, F1 and ROC-AUC scores are all quite high, in the 90%+ range. This indicates that the model has learned the patterns well and is generalizing successfully to new data.
-     - The test set scores are very close to the training set scores. This suggests there is minimal overfitting, which is great.
-     - The high recall suggests that the model is correctly identifying most of the relevant ABNORMAL cases, at the cost of some precision. This may be desirable for a diagnostic application.            
+     - The model appears to perform consistently across training, validation, and test sets.
+     - High precision and recall on all sets suggest that the model is effective at identifying both true positives and avoiding false positives.
+     - The high ROC-AUC values indicate strong performance in distinguishing between the two classes.
 """)
 
 st.markdown('')
@@ -298,7 +144,7 @@ st.markdown("""
      **1. Description of the input features**
      
      Inputs are optical coherence tomography (OCT) images of retinal tissues having structure and morphology of
-      retinal tissues as signal and speckle noise as noise component. RESNET-18 expects 3 channelled, (224 pixel x 224 pixel) sized images for downstream tasks like feature extraction and classification.
+     retinal tissues as signal and speckle noise as noise component. DenseNet-121 expects 3 channelled images for downstream tasks like feature extraction and classification.
      Therefore, images in the form of PyTorch tensors with size (batchsize, 3, 224, 224) are provided as input to the model.
      
      **2. Description and interpretation of the model output**
@@ -323,7 +169,7 @@ st.markdown("""
             
      **Precision-Recall limitations**
 
-     - High recall but relatively lower precision suggests some over-prediction of abnormal cases. In other words, the model is
+     - Slightly higher recall but relatively lower precision suggests some over-prediction of abnormal cases. In other words, the model is
       being more inclusive, making an effort to avoid missing any positive instances (minimizing false negatives) even if it means allowing more false positives.
      - Predicted probability thresholds may need adjustment to balance precision and recall for clinical use.
      
@@ -332,7 +178,7 @@ st.markdown('')
 st.markdown("""
      ### Model Versioning
      
-     Version 1.0.0
+     Version 2.0.0
 """)
 
 st.markdown('')
@@ -340,12 +186,12 @@ st.markdown("""
      ### Dependencies
      
      **Software requirements** 
-     - numpy==1.26.0
-     - torch==2.1.0
-     - torchvision==0.16.0
-     - pillow==10.0.1
-     - pandas==2.1.1
-     - streamlit==1.28.1
+     - numpy 1.26.0
+     - torch 2.1.0
+     - torchvision 0.16.0
+     - pillow 10.0.1
+     - pandas 2.1.1
+     - streamlit 1.28.1
      
      **Hardware requirements**
      - Recommended: GPU
@@ -420,15 +266,17 @@ st.markdown("""
 st.markdown('')
 st.markdown("""
      ### Release Date
-     Nov 14 2023
+     - Current model release: 2023-11-18
+     - First release: 2023-11-14
 """)
 
 st.markdown('')
 st.markdown("""
      ### Additional Notes
-     - The model was trained using PyTorch and Python with an NVIDIA P100 GPU on a Kaggle environment. Key packages used include NumPy, Matplotlib, Pillowa and Scikit-Learn.
-     - The overall model architecture consists of a ResNet18 backbone pre-trained on ImageNet, with a customized classifier head and loss function added.
-     - Training was done on a large 108k image dataset. Test set was held out completely from model development.
+     - The model was trained using PyTorch and Python with an NVIDIA P100 GPU on a Kaggle environment. Key packages used include NumPy, Matplotlib, Pillow and Scikit-Learn.
+     - The overall model architecture consists of a DenseNet-121 backbone pre-trained on ImageNet, with a customized classifier head and loss function added.
+     - Training and validation was done on a large 103K image dataset. Test set was held out completely from model development.
+     - Hyperparameter Tuning was carried out and various pre-trained model architectures such as ResNet, VGG and DenseNet families were explored.
      - Class imbalance was handled via weighted loss function.
      - The dataset consisted of OCT images sourced from [data.mendeley.com](https://data.mendeley.com/datasets/rscbjbr9sj/3)
      - Regular model monitoring, updated retraining, explainability and bias mitigation procedures should be implemented for production deployment.
