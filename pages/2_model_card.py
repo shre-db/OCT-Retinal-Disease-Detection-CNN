@@ -178,7 +178,7 @@ st.markdown('')
 st.markdown("""
      ### Model Versioning
      
-     Version 2.0.0
+     Version 1.0.0
 """)
 
 st.markdown('')
@@ -324,7 +324,7 @@ css_fa = '''
     <a href="https://www.instagram.com/shryzium/" target="_blank"><i class="fa-brands fa-instagram footer-fa"></i></a>
 </div><br>
 <div>
-    <p class="footer-text">Version 1.0.0</p>
+    <p class="footer-text">Version 1.1.0</p>
 </div>
 '''
 
